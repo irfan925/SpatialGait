@@ -1,152 +1,145 @@
 <!DOCTYPE html>
-<html>
-    <head>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gait Analysis</title>
+    <link rel="icon" type="image/png" href="uoh.png">
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
+    <style>
+        body {
+            margin: 0;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
 
-           
-            #dow, #bttn8{
-                padding: 10px;
-                margin-bottom: 0px;
-                font-weight: 100;
-                color: blueviolet;
-                font-size: 25px;
-                border: 20px;
-                width: 100%;
-                font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        #heading {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #pose-video {
+            display: none;
+        }
+
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            box-sizing: border-box;
+            gap: 10px;
+        }
+
+        #container-1,
+        #container-2 {
+            flex: 1 1 45%;
+            box-sizing: border-box;
+        }
+
+        #dow, #bttn8 {
+            padding: 10px;
+            margin: 10px 0;
+            font-weight: 600;
+            color: blueviolet;
+            font-size: 20px;
+            width: 100%;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        #block-1 {
+            text-align: center;
+            border-radius: 4px;
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #block-3 {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f2f2f2;
+            margin-bottom: 10px;
+        }
+
+        #block-3 th,
+        #block-3 td {
+            padding: 10px;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+        }
+
+        @media screen and (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
             }
 
-
-            #heading{
-                text-align: center;
-            }
-            
-            #pose-video{
-                display: none;
-            }
-            
-            #container-1{
-                float: left;
-                width: 50%;
-                padding: 5px;
+            #container-1,
+            #container-2 {
+                flex: 1 1 100%;
             }
 
-            #container-2{
-                float: right;
-                width: 25%;
-                padding: 5px;  
-            }
-            
-            #block-1{
-                text-align: center;
-                border-radius: 1px;
-                background-color: #f2f2f2;
-                padding: 1px;
-                margin: 8px 0;
-                font-size: 15px;
-            }
- 
-
-            #block-3{
-                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-                width: 100%;
-                margin: 8px 0;
-                border-radius: 5px;
-                background-color: #f2f2f2;
-                padding: 8px;
+            #dow, #bttn8 {
+                font-size: 18px;
             }
 
-            #block-3 td{
-                padding: 6px;
-                font-size: 25px;
+            #block-3 th, #block-3 td {
+                font-size: 16px;
             }
+        }
+    </style>
 
-            #block-3 th{
-                padding: 6px;
-                text-align: left;
-                font-size: 25px;
-            }
-            
-            @media screen and (max-width: 800px) { 
-                #container-1{
-                    float: None;
-                    width: 100%;
-                    padding: 5px;
-                }
+    <!-- MediaPipe Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+</head>
+<body>
 
-                #container-2{
-                    float: None;
-                    width: 100%;
-                    padding: 5px;  
-                }
-            }
+    <h1 id="heading">Spatial Gait Parameters</h1>
 
-        </style>
+    <div class="main-container">
+        <div id="container-1">
+            <canvas id="pose-canvas"></canvas>
+            <video id="pose-video" muted></video>
+        </div>
 
-        <title>Gait Analysis</title>
-        <link rel="icon" type="image/png" href="uoh.png">
+        <div id="container-2">
+            <button type="button" id="dow">Download CSV File</button>
 
-        <!-- <script src="node_modules/@mediapipe/pose/pose_solution_simd_wasm_bin.js" crossorigin="anonymous"></script>
-        <script src="node_modules/@mediapipe/pose/pose_solution_packed_assets_loader.js" crossorigin="anonymous"></script>
-        <script src="node_modules/@mediapipe/pose/pose_solution_wasm_bin.js" crossorigin="anonymous"></script>
-        <script src="node_modules/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-        <script src="node_modules/@mediapipe/pose/drawing_utils.js" crossorigin="anonymous"></script> -->
-
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-
-
-    </head>
-    <body>
-
-        <h1 id="heading">Spatial Gait Parameters</h1>
-
-
-            <div id="container-1">
-                <canvas id="pose-canvas"></canvas>
-                <video id="pose-video" muted> </video>
+            <div id="block-1">
+                <h2 id="time">Time(mm:ss) 0:0</h2>
             </div>
 
-            <div id="container-2">
-                <button type = "button" id = "dow" >Download CSV File</button>
-                <div id="block-1">
-                    <h2 id="time">Time(mm:ss) 0:0</h3>
-                    
-                </div>
+            <table id="block-3">
+                <tr>
+                    <th>Parameters</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>LA_TO_RA_DIS (cm)</td>
+                    <td id="dis"></td>
+                </tr>
+                <tr>
+                    <td>Sample Duration(s)</td>
+                    <td id="dur"></td>
+                </tr>
+                <tr>
+                    <td>Speed (m/s)</td>
+                    <td id="Gait Speed"></td>
+                </tr>
+            </table>
 
-                <table id="block-3">
-                    <tr>
-                        <th>Parameters</th>
-                        <th>Value</th>
-                        
-                    </tr>
-                    
+            <button type="button" id="bttn8">Start</button>
+        </div>
+    </div>
 
-                    <tr>
-                        <td>LA_TO_RA_DIS (cm)</td>
-                        <td id="dis"></td>
-                        
-                    </tr>
-
-                    <tr>
-                        <td>Sample Duration(s)</td>
-                        <td id="dur"></td>
-                    </tr>
-
-
-                    <tr>
-                        <td>Speed (m/s)</td>
-                        <td id="Gait Speed"></td>
-                        
-                    </tr>
-
-                </table>
-                <button id="bttn8"type="button">Start</button>
-
-            </div>
-            <script src="camera-script.js"> </script>
-    </body>
+    <script src="camera-script.js"></script>
+</body>
 </html>
