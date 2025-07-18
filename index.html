@@ -92,6 +92,33 @@
                 font-size: 16px;
             }
         }
+		
+	@media screen and (max-width: 800px), 
+    screen and (orientation: landscape) and (max-height: 500px) {
+    
+    .main-container {
+        flex-direction: column;
+    }
+
+    #container-1,
+    #container-2 {
+        flex: 1 1 100%;
+    }
+
+    #dow, #bttn8 {
+        font-size: 16px;
+    }
+
+    #block-3 th, #block-3 td {
+        font-size: 14px;
+    }
+
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
     </style>
 
     <!-- MediaPipe Scripts -->
